@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>智慧儲能營運中心（ESOC, Energy Storage Operations Center）政府補助計畫雷達</title>
+  <style>
+    :root{
+      --bg:#f6f8fb;
+      --surface:#ffffff;
+      --surface-2:#f9fbff;
+      --text:#172033;
+      --muted:#667085;
+      --line:#e5e9f0;
+      --brand:#2457d6;
+      --brand-2:#6f8cff;
+      --good:#16845b;
+      --good-bg:#eaf8f2;
+      --mid:#b7791f;
+      --mid-bg:#fff7df;
+      --low:#667085;
+      --low-bg:#eef1f5;
+      --bad:#c0362c;
+      --bad-bg:#fff0ef;
+      --shadow:0 10px 30px rgba(30, 42, 70, .08);
+      --radius:18px;
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;
+      font-family: Inter, "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", system-ui, sans-serif;
+      background:linear-gradient(180deg,#eef4ff 0,#f7f9fc 250px,#f6f8fb 100%);
+      color:var(--text);
+      line-height:1.65;
+    }
+    a{color:inherit}
+    .container{width:min(1180px,calc(100% - 32px));margin:0 auto}
+    .hero{padding:54px 0 28px}
+    .hero-grid{display:grid;grid-template-columns:1.35fr .65fr;gap:28px;align-items:end}
+    .eyebrow{font-size:13px;font-weight:800;letter-spacing:.12em;color:var(--brand);text-transform:uppercase}
+    h1{font-size:clamp(34px,5vw,64px);line-height:1.08;margin:10px 0 14px;letter-spacing:-.03em}
+    .lead{max-width:780px;color:var(--muted);font-size:17px;margin:0}
+    .hero-note{
+      background:rgba(255,255,255,.72);
+      border:1px solid rgba(255,255,255,.85);
+      backdrop-filter: blur(12px);
+      border-radius:18px;padding:18px 20px;
+      box-shadow:var(--shadow);
+      color:#475467;font-size:14px
+    }
+    .hero-note strong{display:block;color:var(--text);font-size:15px;margin-bottom:4px}
+    .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:22px 0 34px}
+    .kpi{
+      background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:18px;
+      box-shadow:0 4px 16px rgba(20,34,68,.04)
+    }
+    .kpi .num{font-size:30px;font-weight:850;line-height:1}
+    .kpi .label{font-size:13px;color:var(--muted);margin-top:8px}
+    .toolbar{
+      position:sticky;top:0;z-index:20;
+      background:rgba(246,248,251,.88);backdrop-filter: blur(12px);
+      border-top:1px solid rgba(229,233,240,.7);
+      border-bottom:1px solid rgba(229,233,240,.85);
+      padding:12px 0;
+      margin-bottom:26px
+    }
+    .toolbar-inner{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+    .search{
+      flex:1 1 260px;background:white;border:1px solid var(--line);border-radius:12px;
+      padding:11px 13px;font-size:14px;outline:none
+    }
+    .filter-btn,.view-btn{
+      border:1px solid var(--line);background:#fff;padding:10px 13px;border-radius:12px;
+      cursor:pointer;font-weight:700;color:#475467
+    }
+    .filter-btn.active,.view-btn.active{background:var(--brand);color:#fff;border-color:var(--brand)}
+    section{margin:34px 0}
+    .section-head{display:flex;justify-content:space-between;gap:20px;align-items:end;margin-bottom:16px}
+    .section-head h2{font-size:24px;margin:0}
+    .section-head p{margin:0;color:var(--muted);font-size:14px}
+    .cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+    .card{
+      background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+      padding:22px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:16px;
+      transition:.2s ease
+    }
+    .card:hover{transform:translateY(-2px);box-shadow:0 16px 36px rgba(30,42,70,.12)}
+    .card-top{display:flex;justify-content:space-between;gap:16px}
+    .rank{font-size:12px;font-weight:850;color:var(--brand);letter-spacing:.08em}
+    .card h3{font-size:20px;line-height:1.35;margin:4px 0 4px}
+    .agency{font-size:13px;color:var(--muted)}
+    .badges{display:flex;flex-wrap:wrap;gap:8px}
+    .badge{display:inline-flex;align-items:center;padding:6px 9px;border-radius:999px;font-size:12px;font-weight:800}
+    .high{background:var(--good-bg);color:var(--good)}
+    .midhigh{background:#edf4ff;color:#3455b7}
+    .medium{background:var(--mid-bg);color:var(--mid)}
+    .invalid{background:var(--bad-bg);color:var(--bad)}
+    .status{background:#eef2f7;color:#465265}
+    .analysis{color:#475467;font-size:14px}
+    .money{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .money-box{background:var(--surface-2);border:1px solid #edf0f5;border-radius:14px;padding:14px}
+    .money-box span{display:block;color:var(--muted);font-size:12px}
+    .money-box strong{display:block;font-size:17px;margin-top:3px}
+    details{border-top:1px solid var(--line);padding-top:12px}
+    summary{cursor:pointer;font-weight:800;font-size:14px;color:#344054}
+    .conditions{font-size:13px;color:#475467;margin:10px 0 0;padding-left:18px}
+    .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:auto}
+    .btn{
+      display:inline-flex;align-items:center;justify-content:center;text-decoration:none;
+      padding:10px 13px;border-radius:11px;font-weight:800;font-size:13px;
+      border:1px solid var(--line);background:white
+    }
+    .btn.primary{background:var(--brand);color:white;border-color:var(--brand)}
+    .roadmap{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:26px;box-shadow:var(--shadow)}
+    .steps{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;align-items:start}
+    .step{position:relative;background:#f8faff;border:1px solid #e5ebfb;border-radius:14px;padding:16px;min-height:150px}
+    .step:not(:last-child)::after{
+      content:"→";position:absolute;right:-16px;top:55px;font-size:24px;font-weight:900;color:#9aa7c5;z-index:2
+    }
+    .step .phase{font-size:11px;font-weight:850;color:var(--brand);letter-spacing:.08em}
+    .step strong{display:block;margin:6px 0 8px}
+    .step small{color:var(--muted)}
+    .table-wrap{overflow:auto;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
+    table{border-collapse:collapse;width:100%;min-width:1050px}
+    th,td{padding:14px 15px;border-bottom:1px solid var(--line);vertical-align:top;text-align:left;font-size:13px}
+    th{position:sticky;top:0;background:#f8faff;font-size:12px;color:#475467;z-index:1}
+    td strong{font-size:14px}
+    .hidden{display:none!important}
+    .empty{display:none;text-align:center;padding:44px;background:#fff;border-radius:16px;color:var(--muted)}
+    footer{padding:36px 0 52px;color:var(--muted);font-size:12px}
+    .disclaimer{background:#fff8e8;border:1px solid #f4e0aa;border-radius:14px;padding:14px 16px;color:#725b20;font-size:13px;margin-top:16px}
+    @media(max-width:900px){
+      .hero-grid{grid-template-columns:1fr}
+      .kpis{grid-template-columns:repeat(2,1fr)}
+      .cards{grid-template-columns:1fr}
+      .steps{grid-template-columns:1fr}
+      .step:not(:last-child)::after{content:"↓";right:auto;left:50%;top:auto;bottom:-25px}
+      .roadmap{padding:20px}
+    }
+    @media(max-width:560px){
+      .container{width:min(100% - 20px,1180px)}
+      .hero{padding-top:32px}
+      h1{font-size:36px}
+      .lead{font-size:15px}
+      .kpis{gap:10px}
+      .kpi{padding:15px}
+      .kpi .num{font-size:26px}
+      .toolbar{position:static}
+      .filter-btn,.view-btn{font-size:12px;padding:9px 11px}
+      .card{padding:18px}
+      .money{grid-template-columns:1fr}
+      .section-head{align-items:start;flex-direction:column}
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <div class="container">
+      <div class="hero-grid">
+        <div>
+          <div class="eyebrow">Funding Radar · ESOC</div>
+          <h1>智慧儲能營運中心（ESOC）<br><span style="font-size:.48em;font-weight:700;color:#475467;letter-spacing:-.01em">Energy Storage Operations Center</span></h1>
+          <p class="lead">將政府補助資訊從大型橫向表格，轉為可快速判斷、篩選與比較的單頁瀏覽介面。適合主管簡報、內部評估與手機分享。</p>
+        </div>
+        <div class="hero-note">
+          <strong>目前評估重點</strong>
+          以智慧儲能營運中心（ESOC, Energy Storage Operations Center）的產品定義、AI 預測、多據點能源最佳化與 PoC 驗證需求為核心進行整理。
+        </div>
+      </div>
+
+      <div class="kpis">
+        <div class="kpi"><div class="num">7</div><div class="label">目前評估計畫</div></div>
+        <div class="kpi"><div class="num">2</div><div class="label">高適配</div></div>
+        <div class="kpi"><div class="num">2</div><div class="label">中高適配</div></div>
+        <div class="kpi"><div class="num">2</div><div class="label">目前條件不符</div></div>
+      </div>
+    </div>
+  </header>
+
+  <div class="toolbar">
+    <div class="container toolbar-inner">
+      <input id="search" class="search" type="search" placeholder="搜尋計畫名稱、主管機關、關鍵字…" />
+      <button class="filter-btn active" data-filter="all">全部</button>
+      <button class="filter-btn" data-filter="high">高適配</button>
+      <button class="filter-btn" data-filter="midhigh">中高適配</button>
+      <button class="filter-btn" data-filter="medium">中適配</button>
+      <button class="filter-btn" data-filter="invalid">目前不符</button>
+      <button id="cardView" class="view-btn active">卡片</button>
+      <button id="tableView" class="view-btn">表格</button>
+    </div>
+  </div>
+
+  <main class="container">
+    <section>
+      <div class="section-head">
+        <div>
+          <h2>計畫評估</h2>
+          <p>優先呈現「適配度、補助規模、申請建議與目前狀態」，詳細條件可展開查看。</p>
+        </div>
+      </div>
+
+      <div id="cards" class="cards">
+        <article class="card" data-fit="high" data-text="SBIR 小型企業創新研發計畫 經濟部中小及新創企業署 prototype phase 1 phase 2 優先申請">
+          <div class="card-top">
+            <div>
+              <div class="rank">RANK 01</div>
+              <h3>SBIR 小型企業創新研發計畫</h3>
+              <div class="agency">經濟部中小及新創企業署</div>
+            </div>
+          </div>
+          <div class="badges">
+            <span class="badge high">高適配</span>
+            <span class="badge status">優先申請</span>
+          </div>
+          <div class="analysis">ESOC 仍在產品定義、演算法及 Prototype 驗證階段，與 Phase 1 先期研究高度相符；取得客戶資料及 PoC 場域後，可銜接 Phase 2。</div>
+          <div class="money">
+            <div class="money-box"><span>最低補助</span><strong>未訂最低</strong></div>
+            <div class="money-box"><span>最高補助</span><strong>Phase 1：150 萬<br>Phase 2：1,200 萬</strong></div>
+          </div>
+          <details>
+            <summary>查看主要條件</summary>
+            <ul class="conditions">
+              <li>符合中小企業資格</li>
+              <li>具創新研發內容</li>
+              <li>補助原則不超過總經費 50%</li>
+              <li>聯盟案至少 3 家，且中小企業占 60% 以上</li>
+            </ul>
+          </details>
+          <div class="badges"><span class="badge status">115 年度持續辦理</span></div>
+          <div class="actions">
+            <a class="btn primary" target="_blank" rel="noopener" href="https://sbir.org.tw/sbir/info">官方網站 ↗</a>
+          </div>
+        </article>
+
+        <article class="card" data-fit="high" data-text="AI創新服務研發補助計畫 數位發展部數位產業署 AI Agent 負載預測 多站能源最佳化">
+          <div>
+            <div class="rank">RANK 02</div>
+            <h3>AI 創新服務研發補助計畫</h3>
+            <div class="agency">數位發展部數位產業署</div>
+          </div>
+          <div class="badges">
+            <span class="badge high">高適配</span>
+            <span class="badge status">下一期優先追蹤</span>
+          </div>
+          <div class="analysis">ESOC 具負載預測、多站能源最佳化及跨組織資料整合情境，可對應 AI 創新應用服務；若能自主分析、提出建議並執行流程，也可評估 AI Agent 整合服務。</div>
+          <div class="money">
+            <div class="money-box"><span>最低補助</span><strong>未訂最低</strong></div>
+            <div class="money-box"><span>最高補助</span><strong>500 萬<br>AI Agent：2,000 萬</strong></div>
+          </div>
+          <details>
+            <summary>查看主要條件</summary>
+            <ul class="conditions">
+              <li>115 年度限 J582、J62、J63 等資訊服務相關業別</li>
+              <li>須具 AI 技術、產品化能力及市場價值</li>
+            </ul>
+          </details>
+          <div class="badges"><span class="badge status">115 年度已於 2026-07-24 截止</span></div>
+          <div class="actions">
+            <a class="btn primary" target="_blank" rel="noopener" href="https://web.moda.gov.tw/ADI/news/events/20044">官方網站 ↗</a>
+          </div>
+        </article>
+
+        <article class="card" data-fit="midhigh" data-text="SIIR 服務業創新研發計畫 經濟部商業發展署 金融業 多據點 能源營運 訂閱 分潤 商業模式">
+          <div>
+            <div class="rank">RANK 03</div>
+            <h3>SIIR 服務業創新研發計畫</h3>
+            <div class="agency">經濟部商業發展署</div>
+          </div>
+          <div class="badges">
+            <span class="badge midhigh">中高適配</span>
+            <span class="badge status">下一期追蹤</span>
+          </div>
+          <div class="analysis">適合把 ESOC 包裝成金融業多據點能源營運、訂閱服務或節費分潤模式；相較技術深度，更重視服務流程、商業模式及市場驗證。</div>
+          <div class="money">
+            <div class="money-box"><span>最低補助</span><strong>未訂最低</strong></div>
+            <div class="money-box"><span>最高補助</span><strong>150～1,000 萬</strong></div>
+          </div>
+          <details>
+            <summary>查看主要條件</summary>
+            <ul class="conditions">
+              <li>本國商業服務業</li>
+              <li>淨值為正</li>
+              <li>須有創新服務模式及市場驗證</li>
+              <li>合作創新至少 3 家</li>
+              <li>原則須編列等額以上自籌款</li>
+            </ul>
+          </details>
+          <div class="badges"><span class="badge status">115 年度經費已用罄</span></div>
+          <div class="actions">
+            <a class="btn primary" target="_blank" rel="noopener" href="https://gcis.nat.gov.tw/neo-s/Web/Index.aspx">官方網站 ↗</a>
+          </div>
+        </article>
+
+        <article class="card" data-fit="midhigh" data-text="節能績效保證專案示範推廣補助計畫 經濟部能源署 多據點 契約容量 EMIS 節能率">
+          <div>
+            <div class="rank">RANK 04</div>
+            <h3>節能績效保證專案示範推廣補助計畫</h3>
+            <div class="agency">經濟部能源署</div>
+          </div>
+          <div class="badges">
+            <span class="badge midhigh">中高適配</span>
+            <span class="badge status">有場域與節能證據時申請</span>
+          </div>
+          <div class="analysis">多據點契約容量及 EMIS 方向符合；但削峰、避超約及時間電價移轉不一定降低總用電量，須搭配空調、照明或機房控制，證明至少 10% 節能率。</div>
+          <div class="money">
+            <div class="money-box"><span>最低補助</span><strong>未訂最低</strong></div>
+            <div class="money-box"><span>最高補助</span><strong>單一 500 萬<br>多據點 1,500 萬</strong></div>
+          </div>
+          <details>
+            <summary>查看主要條件</summary>
+            <ul class="conditions">
+              <li>單點契約容量 100kW 以上，或多據點合計 500kW 以上</li>
+              <li>節能率至少 10%</li>
+              <li>不得重複補助</li>
+              <li>一般補助 20%，中小企業最高 30%</li>
+            </ul>
+          </details>
+          <div class="badges"><span class="badge status">116 年度申請已於 2026-09-16 截止</span></div>
+          <div class="actions">
+            <a class="btn primary" target="_blank" rel="noopener" href="https://www.moeaea.gov.tw/ECW/populace/Law/Content.aspx?menu_id=27113">官方網站 ↗</a>
+          </div>
+        </article>
+
+        <article class="card" data-fit="medium" data-text="A+ 企業創新研發淬鍊計畫 前瞻技術研發計畫 經濟部產業技術司 不確定性最佳化 安全約束 可解釋決策">
+          <div>
+            <div class="rank">RANK 05</div>
+            <h3>A+ 企業創新研發淬鍊計畫－前瞻技術研發計畫</h3>
+            <div class="agency">經濟部產業技術司</div>
+          </div>
+          <div class="badges">
+            <span class="badge medium">中適配</span>
+            <span class="badge status">核心技術突破足夠時備選</span>
+          </div>
+          <div class="analysis">補助規模彈性大，但技術門檻高。ESOC 須證明多站不確定性最佳化、安全約束控制或可解釋決策達到國際前瞻水準；單純系統整合不足。</div>
+          <div class="money">
+            <div class="money-box"><span>最低補助</span><strong>未訂最低</strong></div>
+            <div class="money-box"><span>最高補助</span><strong>未訂固定上限<br>補助 ≤ 總經費 50%</strong></div>
+          </div>
+          <details>
+            <summary>查看主要條件</summary>
+            <ul class="conditions">
+              <li>須具前瞻性、關鍵性、自主性及國際競爭力</li>
+              <li>成熟技術整合、一般客製或單純監控平台不符</li>
+            </ul>
+          </details>
+          <div class="badges"><span class="badge status">依 A+ 計畫公告申請</span></div>
+          <div class="actions">
+            <a class="btn primary" target="_blank" rel="noopener" href="https://service.moea.gov.tw/EE514/tw/aiip/53.html">官方網站 ↗</a>
+          </div>
+        </article>
+
+        <article class="card" data-fit="invalid" data-text="A+早期新創補助計畫 成立未滿3年 兩年最高2000萬">
+          <div>
+            <div class="rank">CONDITIONAL</div>
+            <h3>A+ 早期新創補助計畫</h3>
+            <div class="agency">經濟部產業技術司</div>
+          </div>
+          <div class="badges">
+            <span class="badge invalid">目前條件不符</span>
+            <span class="badge status">成立未滿 3 年才適用</span>
+          </div>
+          <div class="analysis">若申請公司成立年限不符，即使產品方向具潛力也無法申請，因此目前不列為主要路徑。</div>
+          <div class="money">
+            <div class="money-box"><span>最低補助</span><strong>未訂最低</strong></div>
+            <div class="money-box"><span>最高補助</span><strong>兩年最高 2,000 萬</strong></div>
+          </div>
+          <details>
+            <summary>查看主要條件</summary>
+            <ul class="conditions">
+              <li>單一公司申請</li>
+              <li>成立未滿 3 年</li>
+              <li>已有功能雛型</li>
+              <li>淨值為正</li>
+              <li>具潛在客戶或市場需求證明</li>
+              <li>補助不超過總經費 50%</li>
+            </ul>
+          </details>
+          <div class="badges"><span class="badge status">受理至 2027-12-31，採隨到隨審</span></div>
+          <div class="actions">
+            <a class="btn primary" target="_blank" rel="noopener" href="https://service.moea.gov.tw/EE514/tw/aiip/596.html">官方網站 ↗</a>
+          </div>
+        </article>
+
+        <article class="card" data-fit="invalid" data-text="節能服務業獎勵 經濟部能源署 ESCO 量測驗證工程師 節電量">
+          <div>
+            <div class="rank">CONDITIONAL</div>
+            <h3>節能服務業獎勵</h3>
+            <div class="agency">經濟部能源署</div>
+          </div>
+          <div class="badges">
+            <span class="badge invalid">目前條件不符</span>
+            <span class="badge status">與能源服務業合作時評估</span>
+          </div>
+          <div class="analysis">申請人須為能源技術服務業；若後續與具資格之能源服務業合作，才適合納入申請評估。</div>
+          <div class="money">
+            <div class="money-box"><span>最低門檻</span><strong>節電量保證型累積 110 萬度以下不獎勵</strong></div>
+            <div class="money-box"><span>最高獎勵</span><strong>每度 2～4 元累進<br>或核定經費 15%</strong></div>
+          </div>
+          <details>
+            <summary>查看主要條件</summary>
+            <ul class="conditions">
+              <li>申請人須為能源技術服務業</li>
+              <li>淨值為正</li>
+              <li>至少 2 名全職量測驗證工程師</li>
+              <li>具規定儀表</li>
+              <li>與客戶簽訂契約或意向書</li>
+            </ul>
+          </details>
+          <div class="badges"><span class="badge status">115 年度第二梯次受理至 2026-11-16</span></div>
+          <div class="actions">
+            <a class="btn primary" target="_blank" rel="noopener" href="https://www.moeaea.gov.tw/ECW/populace/Law/Content.aspx?menu_id=27200">官方網站 ↗</a>
+          </div>
+        </article>
+      </div>
+
+      <div id="empty" class="empty">找不到符合條件的計畫。</div>
+    </section>
+
+    <section id="roadmapSection">
+      <div class="section-head">
+        <div>
+          <h2>智慧儲能營運中心（ESOC）申請路線圖</h2>
+          <p>從產品定義、Prototype、PoC，到服務商業化與場域節能證據逐步銜接。</p>
+        </div>
+      </div>
+      <div class="roadmap">
+        <div class="steps">
+          <div class="step"><div class="phase">STEP 01</div><strong>產品定義 / Prototype</strong><small>整理技術創新點、演算法、驗證指標與研發工作分解。</small></div>
+          <div class="step"><div class="phase">STEP 02</div><strong>SBIR Phase 1</strong><small>以先期研究與技術可行性驗證切入，建立 PoC 所需基礎。</small></div>
+          <div class="step"><div class="phase">STEP 03</div><strong>PoC / 客戶場域</strong><small>取得實際用電、負載、BESS 與營運流程資料，驗證效益。</small></div>
+          <div class="step"><div class="phase">STEP 04</div><strong>SBIR Phase 2 / AI 補助</strong><small>擴大產品化、多站最佳化與 AI 決策能力。</small></div>
+          <div class="step"><div class="phase">STEP 05</div><strong>SIIR / 節能場域方案</strong><small>進一步驗證服務模式、訂閱/分潤與節能績效。</small></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="tableSection" class="hidden">
+      <div class="section-head">
+        <div>
+          <h2>完整比較表</h2>
+          <p>需要精確比對條件時，再切回完整表格。</p>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>順位</th><th>計畫名稱</th><th>主管單位</th><th>適配度</th><th>申請建議</th><th>最高補助／獎勵</th><th>目前狀態</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody">
+            <tr data-fit="high" data-text="SBIR 小型企業創新研發計畫 經濟部中小及新創企業署">
+              <td>1</td><td><strong>SBIR 小型企業創新研發計畫</strong></td><td>經濟部中小及新創企業署</td><td>高</td><td>優先申請</td><td>Phase 1：150 萬；Phase 2：1,200 萬</td><td>115 年度持續辦理</td>
+            </tr>
+            <tr data-fit="high" data-text="AI創新服務研發補助計畫 數位發展部數位產業署">
+              <td>2</td><td><strong>AI 創新服務研發補助計畫</strong></td><td>數位發展部數位產業署</td><td>高</td><td>下一期優先追蹤</td><td>500 萬；AI Agent 2,000 萬</td><td>2026-07-24 截止，追蹤下一期</td>
+            </tr>
+            <tr data-fit="midhigh" data-text="SIIR 服務業創新研發計畫 經濟部商業發展署">
+              <td>3</td><td><strong>SIIR 服務業創新研發計畫</strong></td><td>經濟部商業發展署</td><td>中高</td><td>下一期追蹤</td><td>150～1,000 萬</td><td>115 年度經費已用罄</td>
+            </tr>
+            <tr data-fit="midhigh" data-text="節能績效保證專案示範推廣補助計畫 經濟部能源署">
+              <td>4</td><td><strong>節能績效保證專案示範推廣補助計畫</strong></td><td>經濟部能源署</td><td>中高</td><td>有場域與節能證據時申請</td><td>單一 500 萬；多據點 1,500 萬</td><td>2026-09-16 截止</td>
+            </tr>
+            <tr data-fit="medium" data-text="A+ 企業創新研發淬鍊計畫 前瞻技術研發計畫 經濟部產業技術司">
+              <td>5</td><td><strong>A+ 前瞻技術研發計畫</strong></td><td>經濟部產業技術司</td><td>中</td><td>核心技術突破足夠時備選</td><td>未訂固定上限</td><td>依 A+ 計畫公告申請</td>
+            </tr>
+            <tr data-fit="invalid" data-text="A+ 早期新創補助計畫 經濟部產業技術司">
+              <td>不符</td><td><strong>A+ 早期新創補助計畫</strong></td><td>經濟部產業技術司</td><td>條件式高</td><td>成立未滿 3 年才適用</td><td>兩年最高 2,000 萬</td><td>受理至 2027-12-31</td>
+            </tr>
+            <tr data-fit="invalid" data-text="節能服務業獎勵 經濟部能源署">
+              <td>不符</td><td><strong>節能服務業獎勵</strong></td><td>經濟部能源署</td><td>條件式高</td><td>能源服務業合作時評估</td><td>每度 2～4 元累進；或核定經費 15%</td><td>115 年度第二梯次至 2026-11-16</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <div class="disclaimer">
+      本頁內容依你提供的評估表整理，適合作為內部決策與展示介面；正式申請前仍應以各主管機關最新公告、申請須知與當年度預算為準。
+    </div>
+  </main>
+
+  <footer>
+    <div class="container">智慧儲能營運中心（ESOC, Energy Storage Operations Center）· Funding Radar · Responsive Single Page Prototype</div>
+  </footer>
+
+  <script>
+    const search = document.getElementById('search');
+    const filters = document.querySelectorAll('.filter-btn');
+    const cards = [...document.querySelectorAll('.card')];
+    const rows = [...document.querySelectorAll('#tableBody tr')];
+    const empty = document.getElementById('empty');
+    const cardView = document.getElementById('cardView');
+    const tableView = document.getElementById('tableView');
+    const cardsEl = document.getElementById('cards');
+    const tableSection = document.getElementById('tableSection');
+    const roadmapSection = document.getElementById('roadmapSection');
+    let activeFilter = 'all';
+
+    function applyFilter(){
+      const q = search.value.trim().toLowerCase();
+      let visible = 0;
+
+      cards.forEach(el=>{
+        const matchFilter = activeFilter === 'all' || el.dataset.fit === activeFilter;
+        const matchSearch = !q || el.dataset.text.toLowerCase().includes(q) || el.innerText.toLowerCase().includes(q);
+        const show = matchFilter && matchSearch;
+        el.classList.toggle('hidden', !show);
+        if(show) visible++;
+      });
+
+      rows.forEach(el=>{
+        const matchFilter = activeFilter === 'all' || el.dataset.fit === activeFilter;
+        const matchSearch = !q || el.dataset.text.toLowerCase().includes(q) || el.innerText.toLowerCase().includes(q);
+        el.classList.toggle('hidden', !(matchFilter && matchSearch));
+      });
+
+      empty.style.display = visible ? 'none' : 'block';
+    }
+
+    filters.forEach(btn=>{
+      btn.addEventListener('click',()=>{
+        filters.forEach(b=>b.classList.remove('active'));
+        btn.classList.add('active');
+        activeFilter = btn.dataset.filter;
+        applyFilter();
+      });
+    });
+    search.addEventListener('input',applyFilter);
+
+    cardView.addEventListener('click',()=>{
+      cardView.classList.add('active');
+      tableView.classList.remove('active');
+      cardsEl.classList.remove('hidden');
+      roadmapSection.classList.remove('hidden');
+      tableSection.classList.add('hidden');
+    });
+
+    tableView.addEventListener('click',()=>{
+      tableView.classList.add('active');
+      cardView.classList.remove('active');
+      cardsEl.classList.add('hidden');
+      roadmapSection.classList.add('hidden');
+      tableSection.classList.remove('hidden');
+      empty.style.display='none';
+    });
+  </script>
+</body>
+</html>
